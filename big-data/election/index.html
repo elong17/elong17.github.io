@@ -3,9 +3,9 @@
 <head>
     <title>Learning D3: Election Data</title>
     
-    <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
     <script src="https://d3js.org/d3-array.v1.min.js"></script>
-    <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo.v1.min.js"></script>
     <script src="https://d3js.org/d3-queue.v3.min.js"></script>
     <script src="data/problem_set_data/results.json"></script>
@@ -112,19 +112,14 @@
     var path = d3.geoPath()
         .projection(projection);
 
-    var svg = d3.select("body")
+        // create svg
+    var svg = d3.selectAll("body")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
         .attr("align", "center");
 
-
-    // d3.queue()
-    //     .defer(d3.json, "data/problem_set_data/results.json")
-    //     .await(ready); // Run 'ready' when JSONs are loaded
-    
-        // Ready Function, runs when data is loaded
-
+        //bind data to svg, initial map on election 2000 results
     var results = svg.selectAll("path")
         .data( election_results_json.features )
         .enter()
@@ -140,10 +135,12 @@
         .attr( "d", path )
         .attr( "class", "states");
 
+        // add interactive slider
     d3.select("#timeslide").on("input", function() {
         update(this.value)
     });
 
+        //update input data based on year selected
     function update(value) {
             document.getElementById("range").innerHTML=year[value];
             
@@ -180,38 +177,15 @@
             }
     };
 
-    function initialYear(data, value){
-            if (d.properties.elect2000 == "R") {
-                return "#a7383e";
-            } else {
-                return "#2b4c6f";
-            }
-        };
+    // function initialYear(data, value){
+    //         if (d.properties.elect2000 == "R") {
+    //             return "#a7383e";
+    //         } else {
+    //             return "#2b4c6f";
+    //         }
+    //     };
     
 
-
-
-    // Ready Function, runs when data is loaded
-    // function ready(error, results) {
-    //   if (error) throw error;
-
-    //   var results = svg.append ("g")
-
-    //   results.selectAll( "path" )
-    //     .data( election_results_json.features )
-    //     .enter()
-    //     .append( "path" )
-    //     .attr( "fill", function(d) {
-    //         if (d.properties.elect2016 == "R") {
-    //             return "Red";
-    //         } else {
-    //             return "Blue";
-    //         }
-    //     })
-    //     .attr( "stroke", "#FFF")
-    //     .attr( "d", geoPath );
-    //     console.log(d.properties.elect2016);       
-    // }
     
     </script>
 </body>
