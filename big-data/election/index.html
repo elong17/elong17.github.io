@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Learning D3: Election Data</title>
+    
+    <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3-array.v1.min.js"></script>
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://d3js.org/d3-geo.v1.min.js"></script>
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+    <script src="data/problem_set_data/results.json"></script>
+    
+    <style>
+
+    body {
+        position: absolute;
+        font-family: "Proxima Nova", "Montserrat", sans-serif;
+    }
+    h1  {
+        text-align: center;
+        position: relative;
+        font-size: 1.3em;
+        font-weight: 100;
+    }
+    h2 {
+        position: relative;
+        text-align: center;
+        font-size: 90%;
+        margin-bottom: 0px;
+    }
+    h3 {
+        position: relative;
+        margin-top: 0px;
+        text-align: center;
+        font-size: 50%;
+    }
+    #sliderContainer {
+    text-align: center;
+    position: relative;
+    top: 600px;
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    }
+    .my-legend {
+    max-width: 300px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 50px;
+    position: relative;
+    }
+    .my-legend .legend-scale ul {
+    margin: 0;
+    padding: 0;
+    float: center;
+    list-style: none;
+    }
+    .my-legend .legend-scale ul li {
+    display: block;
+    float: left;
+    width: 150px;
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 80%;
+    list-style: none;
+    }
+   .my-legend ul.legend-labels li span {
+    display: block;
+    float: center;
+    height: 20px;
+    width: 150px;
+    }
+    .states {
+
+    }
+    
+    </style>
+</head>
+<body>
+    <!-- Page elements and content go here. -->
+    <h1>US Presidential Election Results </h1>
+    <h2>By State | 2000 - 2016</h2>
+    <h3>Source: U.S. National Archives and Records Administration </h3>
+    <div class='my-legend'>
+    <div class='legend-title'></div>
+    <div class='legend-scale'>
+        <ul class='legend-labels'>
+            <li><span style='background:#2b4c6f;'></span>Democrat</li>
+            <li><span style='background:#a7383e;'></span>Republican</li>
+        </ul>
+    </div>
+    </div>
+
+    <div id="sliderContainer">
+        <input id="timeslide" type="range" min="0" max="4" value="0" step="1"/><br>
+        <span id="range">2000</span>
+    </div>
+
+    <script>
+
+    var inputValue = null;
+
+    var year = ["2000", "2004", "2008", "2012", "2016"]
+
+    var width = 900,
+    height = 500;
+
+    var projection = d3.geoAlbers()
+        .scale(1000)
+        .translate([width / 2, height / 2]);
+
+    var path = d3.geoPath()
+        .projection(projection);
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("align", "center");
+
+
+    // d3.queue()
+    //     .defer(d3.json, "data/problem_set_data/results.json")
+    //     .await(ready); // Run 'ready' when JSONs are loaded
+    
+        // Ready Function, runs when data is loaded
+
+    var results = svg.selectAll("path")
+        .data( election_results_json.features )
+        .enter()
+        .append( "path" )
+        .attr( "fill", function(d) {
+            if (d.properties.elect2000 == "R") {
+                return "#a7383e";
+            } else {
+                return "#2b4c6f";
+            }
+        })
+        .attr( "stroke", "#FFF")
+        .attr( "d", path )
+        .attr( "class", "states");
+
+    d3.select("#timeslide").on("input", function() {
+        update(this.value)
+    });
+
+    function update(value) {
+            document.getElementById("range").innerHTML=year[value];
+            
+            inputValue = year[value];
+            
+            d3.selectAll(".states")
+                .attr("fill", function (d) {
+                switch (inputValue) {
+                    case "2000":
+                        return color(d.properties.elect2000);
+                        break;
+                    case "2004":
+                        return color(d.properties.elect2004);
+                        break;
+                    case "2008":
+                        return color(d.properties.elect2008);
+                        break;
+                    case "2012":
+                        return color(d.properties.elect2012);
+                        break;
+                    case "2016":
+                        return color(d.properties.elect2016);
+                        break;
+                };
+        });
+    }
+
+    // update the fill of each SVG of class "states" with value
+    function color(value) {
+        if (value == "R") {
+                return "#a7383e";
+            } else {
+                return "#2b4c6f";
+            }
+    };
+
+    function initialYear(data, value){
+            if (d.properties.elect2000 == "R") {
+                return "#a7383e";
+            } else {
+                return "#2b4c6f";
+            }
+        };
+    
+
+
+
+    // Ready Function, runs when data is loaded
+    // function ready(error, results) {
+    //   if (error) throw error;
+
+    //   var results = svg.append ("g")
+
+    //   results.selectAll( "path" )
+    //     .data( election_results_json.features )
+    //     .enter()
+    //     .append( "path" )
+    //     .attr( "fill", function(d) {
+    //         if (d.properties.elect2016 == "R") {
+    //             return "Red";
+    //         } else {
+    //             return "Blue";
+    //         }
+    //     })
+    //     .attr( "stroke", "#FFF")
+    //     .attr( "d", geoPath );
+    //     console.log(d.properties.elect2016);       
+    // }
+    
+    </script>
+</body>
+</html>
